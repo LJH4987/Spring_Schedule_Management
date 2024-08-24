@@ -23,5 +23,5 @@ public class Weather {
     private Double temperature;
 
     @Column(nullable = false, length = 255)
-    private String description;
+    private String weatherDescription;
 }
