@@ -1,6 +1,8 @@
 ### 환경 변수 설정
-@ADMIN_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjaHVsc29vQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiQURNSU4iXSwiaWF0IjoxNzI0ODI3MTU0LCJleHAiOjE3MjQ5MTM1NTR9.i4EiKCtAGMPiGaiS9FBaJq3iJ-itkqWL5dKX3TcrEQc
-@USER_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ4MjcxMzgsImV4cCI6MTcyNDkxMzUzOH0.AL9b5J3-s6rE9dnMTDNxWQFkhcczGrAob3YmdmW72-A
+@ADMIN_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjaHVsc29vQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiQURNSU4iXSwiaWF0IjoxNzI0OTUwMDQ2LCJleHAiOjE3MjUwMzY0NDZ9.optSP08vbIFd3ZSXZ7rVSBbgIR5eONWj70Vr6i2lZwo
+
+@USER_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ5NTAwMjAsImV4cCI6MTcyNTAzNjQyMH0.am9HiCtfeCcVqsEYUo5GBYht2_rX_d_a2-8cf4_qOFY
+
 @EXPIRED_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbmRob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ4Mjg4MjEsImV4cCI6MTcyMzkxNTIyMX0.CbGteAMQD1kREdDkwb-i7tkDrjgRcch2gbAOkMRNies
 
 
@@ -216,7 +218,7 @@ Content-Type: application/json
 Authorization: {{USER_TOKEN}}
 
 ### 특정 일정에 대한 모든 댓글 조회 (사용자 또는 관리자 권한 필요, 성공)
-GET http://localhost:8080/comments/schedule/7
+GET http://localhost:8080/comments/schedule/6
 Content-Type: application/json
 Authorization: {{USER_TOKEN}}
 

@@ -7,5 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface JwtAuthorizationFilterInterface {
+
     void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException;
+
 }

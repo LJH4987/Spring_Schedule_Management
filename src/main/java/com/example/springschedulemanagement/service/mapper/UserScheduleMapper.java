@@ -31,23 +31,4 @@ public class UserScheduleMapper {
         }
     }
 
-    public static UserSchedule toEntity(UserScheduleDTO userScheduleDTO) {
-        try {
-            if (userScheduleDTO == null) {
-                throw new BaseException("유효하지 않은 UserScheduleDTO입니다.");
-            }
-
-            UserSchedule userSchedule = new UserSchedule();
-            userSchedule.setId(userScheduleDTO.getId());
-            userSchedule.setCreatedDate(userScheduleDTO.getCreatedDate());
-            userSchedule.setUpdatedDate(userScheduleDTO.getUpdatedDate());
-
-            ServiceLoggingUtil.logDebug(UserScheduleMapper.class, "UserScheduleDTO를 UserSchedule 엔티티로 변환했습니다. UserScheduleDTO ID: {}", userScheduleDTO.getId());
-            return userSchedule;
-
-        } catch (Exception e) {
-            ServiceLoggingUtil.logError(UserScheduleMapper.class, "UserScheduleDTO를 UserSchedule 엔티티로 변환하는 중 오류가 발생했습니다.", e);
-            throw new BaseException("UserScheduleDTO를 UserSchedule 엔티티로 변환하는 중 문제가 발생했습니다.", e);
-        }
-    }
 }

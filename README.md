@@ -88,3 +88,5 @@ API 명세서는 시트 갱신 완료 까지 .http파일로 대체합니다.</br
 구글 시트 링크 : 추후 갱신 예정
 
 ![ERD.png](ERD.png)
+
+![ClassDiagram](https://github.com/user-attachments/assets/460c06ef-a569-4136-8eaf-6bb1faddb2c8)

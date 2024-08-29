@@ -44,7 +44,7 @@ public class JwtTokenProvider {
     public String createToken(String email, List<UserRole> roles) {
         List<String> roleNames = roles.stream().map(role -> role.getRoleName().name()).collect(Collectors.toList());
 
-        return Jwts.builder().setSubject(email).claim("roles", roleNames).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() - 1000000000 + validityInMilliseconds)).signWith(key, SIGNATURE_ALGORITHM).compact();
+        return Jwts.builder().setSubject(email).claim("roles", roleNames).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds)).signWith(key, SIGNATURE_ALGORITHM).compact();
     }
 
     private Claims getClaimsFromToken(String token) {
