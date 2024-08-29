@@ -114,4 +114,5 @@ public class UserRoleServiceImpl implements UserRoleService {
             throw new DuplicateRoleAssignmentException("이미 해당 사용자에게 해당 권한이 할당되어 있습니다." + " 사용자ID: " + userId + ", 권한: " + roleName);
         }
     }
+
 }

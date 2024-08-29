@@ -64,4 +64,5 @@ public class WeatherServiceImpl implements WeatherService {
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         return new WeatherDTO(currentDate, "N/A");
     }
+
 }

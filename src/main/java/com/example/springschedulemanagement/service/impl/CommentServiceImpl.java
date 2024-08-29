@@ -157,4 +157,5 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("해당 ID를 가진 댓글을 찾을 수 없습니다: " + commentId));
     }
+
 }

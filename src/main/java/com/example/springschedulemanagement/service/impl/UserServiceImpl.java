@@ -141,4 +141,5 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("이미 존재하는 이메일입니다: " + userDTO.getEmail());
         }
     }
+
 }

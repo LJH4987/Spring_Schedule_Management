@@ -158,4 +158,5 @@ public class UserScheduleServiceImpl implements UserScheduleService {
             throw new UserScheduleConflictException("유저 ID " + userId + "가 이미 일정 ID " + scheduleId + "에 할당되어 있습니다.");
         }
     }
+
 }
