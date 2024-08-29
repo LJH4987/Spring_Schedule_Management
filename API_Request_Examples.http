@@ -1,0 +1,435 @@
+### 환경 변수 설정
+@ADMIN_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjaHVsc29vQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiQURNSU4iXSwiaWF0IjoxNzI0ODI3MTU0LCJleHAiOjE3MjQ5MTM1NTR9.i4EiKCtAGMPiGaiS9FBaJq3iJ-itkqWL5dKX3TcrEQc
+@USER_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ4MjcxMzgsImV4cCI6MTcyNDkxMzUzOH0.AL9b5J3-s6rE9dnMTDNxWQFkhcczGrAob3YmdmW72-A
+@EXPIRED_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbmRob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ4Mjg4MjEsImV4cCI6MTcyMzkxNTIyMX0.CbGteAMQD1kREdDkwb-i7tkDrjgRcch2gbAOkMRNies
+
+
+### 회원가입 요청 - 성공
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "email": "hong@example.com",
+  "hashedPassword": "password123"
+}
+
+### 회원가입 요청 - 실패 (이름 누락)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "hong@example.com",
+  "hashedPassword": "password123"
+}
+
+### 회원가입 요청 - 실패 (이메일 누락)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "email": "",
+  "hashedPassword": "password123"
+}
+
+### 회원가입 요청 - 실패 (이메일 형식 오류)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "email": "이상한이메일",
+  "hashedPassword": "password123"
+}
+
+### 회원가입 요청 - 실패 (비밀번호 누락)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "홍길동",
+  "email": "hong@example.com",
+  "hashedPassword": ""
+}
+
+### 로그인 요청 (성공)
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+email=hong@example.com&hashPassword=password123
+
+> {% client.global.set("userToken", JSON.parse(response.body).token); %}
+
+
+
+### 로그인 요청 (실패 - 잘못된 이메일)
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+email=wrong@example.com&hashPassword=password123
+
+
+
+### 로그인 요청 (실패 - 잘못된 비밀번호)
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+email=hong@example.com&hashPassword=wrongpassword
+
+
+
+### 관리자 로그인 (성공) - adminToken 발급
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+email=chulsoo@example.com&hashPassword=hashedpassword1
+
+> {% client.global.set("adminToken", JSON.parse(response.body).token); %}
+
+
+### 모든 사용자 조회 (관리자 권한 필요, 성공)
+GET http://localhost:8080/users
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 특정 사용자 조회 (관리자 권한 필요, 성공)
+GET http://localhost:8080/users/1
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 사용자 생성 (관리자 권한 필요, 성공)
+POST http://localhost:8080/users
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "name": "명수",
+  "email": "park@example.com",
+  "hashedPassword": "securepassword"
+}
+
+
+### 사용자 수정 (관리자 권한 필요, 성공)
+PUT http://localhost:8080/users/1
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "name": "홍길동 수정",
+  "email": "hong@example.com",
+  "hashedPassword": "newpassword123"
+}
+
+
+### 사용자 삭제 (관리자 권한 필요, 성공)
+DELETE http://localhost:8080/users/5
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 모든 일정 조회 - 디폴트 페이징 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/schedules
+Authorization: {{USER_TOKEN}}
+
+
+### 모든 일정 조회 - 페이징 조절 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/schedules?page=0&size=20
+Authorization: {{USER_TOKEN}}
+
+
+### 모든 일정 조회 - 페이징 조절 (사용자 또는 관리자 권한 필요, 실패)
+GET http://localhost:8080/schedules?page=999999999&size=20
+Authorization: {{USER_TOKEN}}
+
+
+### 모든 일정 조회 - 페이징 조절 (사용자 또는 관리자 권한 필요, 실패)
+GET http://localhost:8080/schedules?page=0&size=999999999
+Authorization: {{USER_TOKEN}}
+
+
+### 특정 일정 조회 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/schedules/1
+Authorization: {{USER_TOKEN}}
+
+
+### 일정 생성 (사용자 또는 관리자 권한 필요, 성공)
+POST http://localhost:8080/schedules
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "userId": 1,
+  "title": "새로운 일정",
+  "description": "설명"
+}
+
+
+### 일정 수정 (사용자 또는 관리자 권한 필요, 성공)
+PUT http://localhost:8080/schedules/1
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "title": "수정된 일정",
+  "description": "수정된 설명"
+}
+
+
+### 일정 삭제 (사용자 또는 관리자 권한 필요, 성공)
+DELETE http://localhost:8080/schedules/4
+Authorization: {{USER_TOKEN}}
+
+
+### 댓글 생성 (사용자 또는 관리자 권한 필요, 성공)
+POST http://localhost:8080/comments
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "userId": 1,
+  "content": "새로운 댓글",
+  "scheduleId": 2
+}
+
+
+### 댓글 수정 (사용자 또는 관리자 권한 필요, 성공)
+PUT http://localhost:8080/comments/3
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "userId": 1,
+  "content": "수정된 댓글"
+}
+
+
+### 댓글 삭제 (사용자 또는 관리자 권한 필요, 성공)
+DELETE http://localhost:8080/comments/1
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+
+### 모든 댓글 조회 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/comments
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+### 특정 일정에 대한 모든 댓글 조회 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/comments/schedule/7
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+
+### 모든 권한 조회 (관리자 권한 필요, 성공)
+GET http://localhost:8080/roles
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 권한 ID로 조회 (관리자 권한 필요, 성공)
+GET http://localhost:8080/roles/2
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 권한 부여 혹은 변경 - 수정기능 (관리자 권한 필요, 성공)
+PUT http://localhost:8080/roles/2
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "roleName": "ADMIN"
+}
+
+### 사용자를 일정에 할당 (관리자 권한 필요, 성공)
+POST http://localhost:8080/userschedules/assign
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "userId": 2,
+  "scheduleId": 3
+}
+
+### 오늘의 날씨 조회 (사용자 또는 관리자 권한 필요, 성공)
+GET http://localhost:8080/weather/today
+Authorization: {{USER_TOKEN}}
+
+
+### 일정 생성 (사용자 권한 필요, 실패 - 토큰 없음)
+POST http://localhost:8080/schedules
+Content-Type: application/json
+
+{
+  "title": "새로운 일정",
+  "description": "설명"
+}
+
+
+### 사용자 생성 (관리자 권한 필요, 실패 - 잘못된 토큰)
+POST http://localhost:8080/users
+Content-Type: application/json
+Authorization: InvalidToken
+
+{
+  "name": "임꺽정",
+  "email": "lim@example.com",
+  "hashedPassword": "securepassword123"
+}
+
+
+### 사용자 수정 (관리자 권한 필요, 실패 - 잘못된 토큰)
+PUT http://localhost:8080/users/1
+Content-Type: application/json
+Authorization: InvalidToken
+
+{
+  "name": "홍길동 수정 실패",
+  "email": "hong@example.com",
+  "hashedPassword": "wrongpassword123"
+}
+
+
+### 일정 삭제 (사용자 또는 관리자 권한 필요, 실패 - 잘못된 토큰)
+DELETE http://localhost:8080/schedules/1
+Authorization: InvalidToken
+
+
+### 댓글 수정 (사용자 또는 관리자 권한 필요, 실패 - 잘못된 토큰)
+PUT http://localhost:8080/comments/1
+Content-Type: application/json
+Authorization: InvalidToken
+
+{
+  "content": "수정된 댓글 실패"
+}
+
+
+### 잘못된 요청 본문 - HttpMessageNotReadableException
+#잘못된 JSON 구문 (쉼표 누락)
+POST http://localhost:8080/schedules
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "title": "새로운 일정"
+  "description": "설명"
+}
+
+
+### 유효하지 않은 요청 데이터 - MethodArgumentNotValidException
+POST http://localhost:8080/schedules
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+{
+  "title": "",
+  "description": "설명",
+  "weather": "Sunny",
+  "date": "02-20"
+}
+
+### 토큰 만료 - TokenExpiredException
+GET http://localhost:8080/schedules
+Authorization: {{EXPIRED_TOKEN}}
+
+
+### 인증 오류 - AuthenticationException
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+email=unknown@example.com&hashPassword=wrongpassword
+
+
+### 손상된 JWT 토큰 - MalformedJwtException
+GET http://localhost:8080/schedules
+Authorization: 저는 이상한 토큰이에용
+
+
+### 유효하지 않은 토큰 - InvalidTokenException
+GET http://localhost:8080/schedules
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiO99999999999JlbmRob25nQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3MjQ4Mjg4MjEsImV4cCI6MTcyMzkxNTIyMX0.CbGteAMQD1kREdDkwb-i7tkDrjgRcch2gbAOkMRNies
+
+
+### 토큰 누락 - MissingTokenException
+GET http://localhost:8080/schedules
+
+
+### 데이터베이스 무결성 위반
+# 중복된 이메일로 인한 DataIntegrityViolationException 발생 (사용자 생성하고 나서 테스트)
+POST http://localhost:8080/users
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "name": "명수",
+  "email": "park@example.com",
+  "hashedPassword": "securepassword"
+}
+
+
+### 사용자 일정 충돌 - UserScheduleConflictException
+#이미 등록된 사용자 일정에 중복 등록 시도
+POST http://localhost:8080/userschedules/assign
+Content-Type: application/json
+Authorization: {{ADMIN_TOKEN}}
+
+{
+  "userId": 1,
+  "scheduleId": 1
+}
+
+
+### 일정 찾기 실패 - 옵셔널 이여서 비어있어야함
+#존재하지 않는 일정 ID
+GET http://localhost:8080/schedules/9999
+Authorization: {{USER_TOKEN}}
+
+
+### 댓글 찾기 실패 - 옵셔널 이여서 비어있어야함
+#존재하지 않는 댓글 ID
+GET http://localhost:8080/comments/9999
+Authorization: {{USER_TOKEN}}
+
+
+### 권한 찾기 실패 - 옵셔널 이여서 비어있어야함
+#존재하지 않는 권한 ID
+GET http://localhost:8080/roles/9999
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 사용자 찾기 실패 - 옵셔널 이여서 비어있어야함
+#존재하지 않는 사용자 ID
+GET http://localhost:8080/users/111111
+Authorization: {{ADMIN_TOKEN}}
+
+
+### 접근 거부 - AccessDeniedException
+#USER 권한으로 관리자 권한이 필요한 요청 시도
+DELETE http://localhost:8080/users/1
+Authorization: {{USER_TOKEN}}
+
+
+### 예상치 못한 예외 - Exception
+#존재하지 않는 경로로 요청 시도
+GET http://localhost:8080/unexpected-error
+Authorization: {{USER_TOKEN}}
+
+### 기본 페이징 테스트 (성공)
+GET http://localhost:8080/schedules
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+### 커스텀 페이징 테스트 (성공)
+GET http://localhost:8080/schedules?page=0&size=20
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+### 페이지 번호가 너무 큰 경우 - InvalidDataAccessApiUsageException
+GET http://localhost:8080/schedules?page=999999999&size=20
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}
+
+### 페이지 크기가 너무 큰 경우 - InvalidPageSizeException
+GET http://localhost:8080/schedules?page=0&size=999999999
+Content-Type: application/json
+Authorization: {{USER_TOKEN}}

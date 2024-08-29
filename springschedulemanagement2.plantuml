@@ -1,0 +1,873 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AccessDeniedException {
+  + AccessDeniedException(String): 
+}
+class AuthController {
+  + login(String, String): ResponseEntity<String>
+  + register(String, AuthUserDTO): ResponseEntity<AuthUserDTO>
+  + AuthController(AuthService): 
+}
+interface AuthService << interface >> {
+  + login(String, String): String
+  + register(AuthUserDTO): AuthUserDTO
+}
+class AuthServiceImpl {
+  + login(String, String): String
+  + register(AuthUserDTO): AuthUserDTO
+  - createUserRole(User, RoleName): UserRole
+  + AuthServiceImpl(UserRepository, UserRoleRepository, JwtTokenProvider, AuthServiceMapper): 
+}
+class AuthServiceMapper {
+  + toEntity(AuthUserDTO): User
+  + toDTO(User): AuthUserDTO
+  + AuthServiceMapper(): 
+}
+class AuthUserDTO {
+  # canEqual(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  + equals(Object): boolean
+  + AuthUserDTO(): 
+  + AuthUserDTO(Long, String, String, String): 
+   name: String
+   hashedPassword: String
+   id: Long
+   email: String
+  - hashedPassword: String
+  - email: String
+  - id: Long
+  - name: String
+}
+class AuthenticationException {
+  + AuthenticationException(String): 
+}
+class BaseException {
+  - logException(String, Throwable): void
+  + BaseException(String): 
+  + BaseException(String, Throwable): 
+  + BaseException(String, Throwable, ErrorCode): 
+  + BaseException(String, ErrorCode): 
+   errorCode: ErrorCode
+  - errorCode: ErrorCode
+}
+class Comment {
+  + hashCode(): int
+  + equals(Object): boolean
+  + Comment(Long, String, Schedule, User, LocalDateTime, LocalDateTime): 
+  + Comment(): 
+   content: String
+   schedule: Schedule
+   id: Long
+   updatedDate: LocalDateTime
+   createdDate: LocalDateTime
+   user: User
+  - content: String
+  - updatedDate: LocalDateTime
+  - schedule: Schedule
+  - id: Long
+  - user: User
+  - createdDate: LocalDateTime
+}
+class CommentController {
+  + getCommentById(String, Long): ResponseEntity<CommentDTO>
+  + createComment(String, CommentDTO): ResponseEntity<CommentDTO>
+  + getAllComments(String): ResponseEntity<List<CommentDTO>>
+  + getAllCommentsForSchedule(String, Long): ResponseEntity<List<CommentDTO>>
+  + deleteComment(String, Long): ResponseEntity<Void>
+  + updateComment(String, Long, CommentDTO): ResponseEntity<CommentDTO>
+  + CommentController(CommentService, JwtAuthorizationUtil): 
+}
+class CommentDTO {
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + equals(Object): boolean
+  + toString(): String
+  + CommentDTO(Long, String, LocalDateTime, LocalDateTime, Long, String, Long, String): 
+  + CommentDTO(): 
+   content: String
+   id: Long
+   userName: String
+   createdDate: LocalDateTime
+   userId: Long
+   scheduleId: Long
+   updatedDate: LocalDateTime
+   scheduleTitle: String
+  - content: String
+  - createdDate: LocalDateTime
+  - userName: String
+  - scheduleTitle: String
+  - updatedDate: LocalDateTime
+  - scheduleId: Long
+  - userId: Long
+  - id: Long
+}
+class CommentMapper {
+  + toEntity(CommentDTO): Comment
+  - getCommentDTO(Comment): CommentDTO
+  - getComment(CommentDTO): Comment
+  + toDTO(Comment): CommentDTO
+  + CommentMapper(): 
+}
+class CommentNotFoundException {
+  + CommentNotFoundException(String): 
+}
+interface CommentRepository << interface >> {
+  + findByScheduleId(Long): List<Comment>
+  + existsById(Long): boolean
+}
+interface CommentService << interface >> {
+  + deleteComment(Long): void
+  + getAllCommentsForSchedule(Long): List<CommentDTO>
+  + updateComment(Long, CommentDTO): CommentDTO
+  + createComment(CommentDTO): CommentDTO
+  + getCommentById(Long): Optional<CommentDTO>
+   allComments: List<CommentDTO>
+}
+class CommentServiceImpl {
+  + updateComment(Long, CommentDTO): CommentDTO
+  - findScheduleById(Long): Schedule
+  - findCommentById(Long): Comment
+  + getCommentById(Long): Optional<CommentDTO>
+  + createComment(CommentDTO): CommentDTO
+  + deleteComment(Long): void
+  - findUserById(Long): User
+  + getAllCommentsForSchedule(Long): List<CommentDTO>
+  + CommentServiceImpl(CommentRepository, UserRepository, ScheduleRepository): 
+   allComments: List<CommentDTO>
+}
+class DatabaseException {
+  + DatabaseException(String): 
+}
+class DuplicateRoleAssignmentException {
+  + DuplicateRoleAssignmentException(String): 
+}
+class EmailAlreadyExistsException {
+  + EmailAlreadyExistsException(String): 
+}
+enum ErrorCode << enumeration >> {
+  + values(): ErrorCode[]
+  + valueOf(String): ErrorCode
+  - ErrorCode(int): 
+   code: int
+  - code: int
+}
+class ErrorResponse {
+  + builder(): ErrorResponseBuilder
+  + ErrorResponse(LocalDateTime, int, String, String, String, String): 
+  + ErrorResponse(): 
+   timestamp: LocalDateTime
+   userMessage: String
+   path: String
+   error: String
+   status: int
+   errorCode: String
+  - errorCode: String
+  - userMessage: String
+  - status: int
+  - path: String
+  - error: String
+  - timestamp: LocalDateTime
+}
+class ErrorResponseBuilder {
+  + timestamp(LocalDateTime): ErrorResponseBuilder
+  + status(int): ErrorResponseBuilder
+  + error(String): ErrorResponseBuilder
+  + errorCode(String): ErrorResponseBuilder
+  + path(String): ErrorResponseBuilder
+  + userMessage(String): ErrorResponseBuilder
+  + build(): ErrorResponse
+  + toString(): String
+  ~ ErrorResponseBuilder(): 
+}
+class ExceptionLogger {
+  + logException(String, Throwable, int): void
+  + ExceptionLogger(): 
+}
+interface GenericRepository<T, ID> << interface >> {
+  + deleteById(ID): void
+  + findById(ID): Optional<T>
+  + findAll(): List<T>
+}
+class GlobalExceptionHandler {
+  + handleDatabaseExceptions(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  + handleServerExceptions(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  + handleGenericException(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  + handleResourceNotFoundExceptions(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  - mapErrorCodeToHttpStatus(ErrorCode): HttpStatus
+  - createErrorResponse(HttpStatus, String, String, String, WebRequest): ErrorResponse
+  - handleException(HttpStatus, String, String, String, WebRequest, Exception): ResponseEntity<ErrorResponse>
+  + handleValidationExceptions(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  + handleBaseException(BaseException, WebRequest): ResponseEntity<ErrorResponse>
+  + handleAuthExceptions(Exception, WebRequest): ResponseEntity<ErrorResponse>
+  + GlobalExceptionHandler(): 
+}
+class InvalidDataAccessApiUsageException {
+  + InvalidDataAccessApiUsageException(String): 
+}
+class InvalidPageSizeException {
+  + InvalidPageSizeException(String): 
+}
+class InvalidTokenException {
+  + InvalidTokenException(String): 
+}
+class JwtAuthorizationFilter {
+  + doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+  # doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+  + JwtAuthorizationFilter(JwtTokenProvider): 
+}
+interface JwtAuthorizationFilterInterface << interface >> {
+  + doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+}
+class JwtAuthorizationUtil {
+  + validateTokenAndRole(String, String[]): void
+  + validateAdminToken(String): void
+  + validateUserOrAdminToken(String): void
+  + JwtAuthorizationUtil(JwtTokenProvider): 
+}
+class JwtTokenProvider {
+  + getRoleFromToken(String): String
+  + validateToken(String): boolean
+  # init(): void
+  - getClaimsFromToken(String): Claims
+  + createToken(String, List<UserRole>): String
+  + getRolesFromToken(String): List<String>
+  + getUsernameFromToken(String): String
+  + resolveToken(HttpServletRequest): String
+  + JwtTokenProvider(): 
+   key: SecretKey
+  - key: SecretKey
+}
+class MalformedJwtException {
+  + MalformedJwtException(String): 
+}
+class MethodArgumentTypeMismatchException {
+  + MethodArgumentTypeMismatchException(String): 
+}
+class MissingTokenException {
+  + MissingTokenException(String): 
+}
+class PasswordEncoder {
+  + encodePassword(String): String
+  + matches(String, String): boolean
+  + PasswordEncoder(): 
+}
+class RestTemplateConfig {
+  + restTemplate(): RestTemplate
+  + RestTemplateConfig(): 
+}
+enum RoleName << enumeration >> {
+  + valueOf(String): RoleName
+  + values(): RoleName[]
+  + RoleName(): 
+}
+class RoleNotFoundException {
+  + RoleNotFoundException(String): 
+}
+class Schedule {
+  + equals(Object): boolean
+  + setUpdatedDate(Object): void
+  + hashCode(): int
+  + Schedule(Long, String, String, LocalDateTime, LocalDateTime, User, List<UserSchedule>, List<Comment>, String, String): 
+  + Schedule(): 
+   description: String
+   comments: List<Comment>
+   title: String
+   id: Long
+   userSchedules: List<UserSchedule>
+   createdDate: LocalDateTime
+   weather: String
+   date: String
+   updatedDate: LocalDateTime
+   user: User
+  - user: User
+  - date: String
+  - userSchedules: List<UserSchedule>
+  - comments: List<Comment>
+  - title: String
+  - description: String
+  - updatedDate: LocalDateTime
+  - weather: String
+  - id: Long
+  - createdDate: LocalDateTime
+}
+class ScheduleController {
+  + deleteSchedule(String, Long): ResponseEntity<Void>
+  + getScheduleById(String, Long): ResponseEntity<ScheduleDTO>
+  + getAllSchedules(String, Pageable, PagedResourcesAssembler<ScheduleDTO>): ResponseEntity<PagedModel<EntityModel<ScheduleDTO>>>
+  + createSchedule(String, ScheduleDTO): ResponseEntity<ScheduleDTO>
+  + updateSchedule(String, Long, ScheduleDTO): ResponseEntity<ScheduleDTO>
+  + ScheduleController(ScheduleService, JwtAuthorizationUtil): 
+}
+class ScheduleDTO {
+  + hashCode(): int
+  + toString(): String
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + ScheduleDTO(Long, String, String, int, Long, String, LocalDateTime, LocalDateTime, String, String): 
+  + ScheduleDTO(): 
+   description: String
+   title: String
+   id: Long
+   userName: String
+   createdDate: LocalDateTime
+   weather: String
+   userId: Long
+   date: String
+   updatedDate: LocalDateTime
+   commentCount: int
+  - id: Long
+  - title: String
+  - description: String
+  - commentCount: int
+  - userId: Long
+  - createdDate: LocalDateTime
+  - updatedDate: LocalDateTime
+  - userName: String
+  - date: String
+  - weather: String
+}
+class ScheduleMapper {
+  + toEntity(ScheduleDTO): Schedule
+  - getScheduleDTO(Schedule): ScheduleDTO
+  + toDTO(Schedule): ScheduleDTO
+  + ScheduleMapper(): 
+}
+class ScheduleNotFoundException {
+  + ScheduleNotFoundException(String): 
+}
+interface ScheduleRepository << interface >> {
+  + existsById(Long): boolean
+  + findById(Long): Optional<Schedule>
+  + findAll(Pageable): Page<Schedule>
+}
+interface ScheduleService << interface >> {
+  + updateSchedule(Long, ScheduleDTO): ScheduleDTO
+  + deleteSchedule(Long): void
+  + createSchedule(ScheduleDTO): ScheduleDTO
+  + getScheduleById(Long): Optional<ScheduleDTO>
+  + getAllSchedules(Pageable): Page<ScheduleDTO>
+}
+class ScheduleServiceImpl {
+  + getScheduleById(Long): Optional<ScheduleDTO>
+  + updateSchedule(Long, ScheduleDTO): ScheduleDTO
+  + deleteSchedule(Long): void
+  + createSchedule(ScheduleDTO): ScheduleDTO
+  - validateUserExistence(Long): void
+  + getAllSchedules(Pageable): Page<ScheduleDTO>
+  + ScheduleServiceImpl(ScheduleRepository, UserRepository, WeatherService): 
+}
+class ServiceLoggingUtil {
+  - getLogger(Class<?>): Logger
+  + logInfo(Class<?>, String, Object[]): void
+  + logWarn(Class<?>, String, Object[]): void
+  + logDebug(Class<?>, String, Object[]): void
+  + logError(Class<?>, String, Object[]): void
+  + ServiceLoggingUtil(): 
+}
+class SpringScheduleManagementApplication {
+  + main(String[]): void
+  + SpringScheduleManagementApplication(): 
+}
+class TokenExpiredException {
+  + TokenExpiredException(String): 
+}
+class User {
+  + equals(Object): boolean
+  + addRole(UserRole): void
+  + hashCode(): int
+  + User(Long, String, String, String, LocalDateTime, LocalDateTime, List<UserSchedule>, List<Comment>, List<Schedule>, List<UserRole>): 
+  + User(): 
+   name: String
+   comments: List<Comment>
+   schedules: List<Schedule>
+   id: Long
+   userSchedules: List<UserSchedule>
+   email: String
+   createdDate: LocalDateTime
+   roles: List<UserRole>
+   updatedDate: LocalDateTime
+   hashPassword: String
+  - email: String
+  - schedules: List<Schedule>
+  - userSchedules: List<UserSchedule>
+  - updatedDate: LocalDateTime
+  - name: String
+  - id: Long
+  - comments: List<Comment>
+  - createdDate: LocalDateTime
+  - roles: List<UserRole>
+  - hashPassword: String
+}
+class UserController {
+  + updateUser(String, Long, UserDTO): ResponseEntity<UserDTO>
+  + createUser(String, UserDTO): ResponseEntity<UserDTO>
+  + getUserById(String, Long): ResponseEntity<UserDTO>
+  + getAllUsers(String): ResponseEntity<List<UserDTO>>
+  + deleteUser(String, Long): ResponseEntity<Void>
+  + UserController(UserService, JwtAuthorizationUtil): 
+}
+class UserDTO {
+  + equals(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + UserDTO(): 
+  + UserDTO(Long, String, String, String, LocalDateTime, LocalDateTime): 
+   name: String
+   hashedPassword: String
+   id: Long
+   updatedDate: LocalDateTime
+   email: String
+   createdDate: LocalDateTime
+  - name: String
+  - email: String
+  - createdDate: LocalDateTime
+  - updatedDate: LocalDateTime
+  - id: Long
+  - hashedPassword: String
+}
+class UserMapper {
+  + toDTO(User): UserDTO
+  + toEntity(UserDTO): User
+  + UserMapper(): 
+}
+class UserNotFoundException {
+  + UserNotFoundException(String): 
+}
+interface UserRepository << interface >> {
+  + existsById(Long): boolean
+  + existsByEmail(String): boolean
+  + findByEmail(String): Optional<User>
+}
+class UserRole {
+  + hashCode(): int
+  + equals(Object): boolean
+  + UserRole(Long, User, RoleName, LocalDateTime, LocalDateTime): 
+  + UserRole(): 
+   roleName: RoleName
+   id: Long
+   updatedDate: LocalDateTime
+   createdDate: LocalDateTime
+   user: User
+  - roleName: RoleName
+  - updatedDate: LocalDateTime
+  - createdDate: LocalDateTime
+  - id: Long
+  - user: User
+}
+class UserRoleController {
+  + getRoleById(String, Long): ResponseEntity<UserRoleDTO>
+  + assignRole(String, Long, UserRoleDTO): ResponseEntity<UserRoleDTO>
+  + getAllRoles(String): ResponseEntity<List<UserRoleDTO>>
+  + UserRoleController(UserRoleService, JwtAuthorizationUtil): 
+}
+class UserRoleDTO {
+  + toString(): String
+  + hashCode(): int
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + UserRoleDTO(Long, RoleName, Long, String, LocalDateTime, LocalDateTime): 
+  + UserRoleDTO(): 
+   userId: Long
+   roleName: RoleName
+   id: Long
+   updatedDate: LocalDateTime
+   userName: String
+   createdDate: LocalDateTime
+  - createdDate: LocalDateTime
+  - roleName: RoleName
+  - userId: Long
+  - userName: String
+  - updatedDate: LocalDateTime
+  - id: Long
+}
+class UserRoleMapper {
+  + toDTO(UserRole): UserRoleDTO
+  + toEntity(UserRoleDTO): UserRole
+  + UserRoleMapper(): 
+}
+interface UserRoleRepository << interface >> {
+  + existsByUserIdAndRoleName(Long, RoleName): boolean
+}
+interface UserRoleService << interface >> {
+  + getRoleById(Long): Optional<UserRoleDTO>
+  + assignRole(Long, UserRoleDTO): UserRoleDTO
+   allRoles: List<UserRoleDTO>
+}
+class UserRoleServiceImpl {
+  - updateRoleDetails(UserRole, UserRoleDTO): void
+  - validateDuplicateRoleAssignment(Long, RoleName): void
+  - findRoleById(Long): UserRole
+  + assignRole(Long, UserRoleDTO): UserRoleDTO
+  + getRoleById(Long): Optional<UserRoleDTO>
+  + UserRoleServiceImpl(UserRoleRepository): 
+   allRoles: List<UserRoleDTO>
+}
+class UserSchedule {
+  + equals(Object): boolean
+  + hashCode(): int
+  + UserSchedule(Long, User, Schedule, LocalDateTime, LocalDateTime): 
+  + UserSchedule(): 
+   schedule: Schedule
+   id: Long
+   updatedDate: LocalDateTime
+   createdDate: LocalDateTime
+   user: User
+  - user: User
+  - createdDate: LocalDateTime
+  - updatedDate: LocalDateTime
+  - id: Long
+  - schedule: Schedule
+}
+class UserScheduleConflictException {
+  + UserScheduleConflictException(String): 
+}
+class UserScheduleController {
+  + deleteUserSchedule(String, Long): ResponseEntity<Void>
+  + updateUserSchedule(String, Long, UserScheduleDTO): ResponseEntity<UserScheduleDTO>
+  + getUserScheduleById(String, Long): ResponseEntity<UserScheduleDTO>
+  + getAllUserSchedules(String): ResponseEntity<List<UserScheduleDTO>>
+  + assignUserToSchedule(String, UserScheduleDTO): ResponseEntity<UserScheduleDTO>
+  + UserScheduleController(UserScheduleService, JwtAuthorizationUtil): 
+}
+class UserScheduleDTO {
+  + equals(Object): boolean
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + toString(): String
+  + UserScheduleDTO(Long, Long, String, Long, String, LocalDateTime, LocalDateTime): 
+  + UserScheduleDTO(): 
+   id: Long
+   userName: String
+   createdDate: LocalDateTime
+   userId: Long
+   scheduleId: Long
+   updatedDate: LocalDateTime
+   scheduleTitle: String
+  - id: Long
+  - scheduleTitle: String
+  - userName: String
+  - userId: Long
+  - scheduleId: Long
+  - createdDate: LocalDateTime
+  - updatedDate: LocalDateTime
+}
+class UserScheduleMapper {
+  + toDTO(UserSchedule): UserScheduleDTO
+  + toEntity(UserScheduleDTO): UserSchedule
+  + UserScheduleMapper(): 
+}
+interface UserScheduleRepository << interface >> {
+  + existsByUserIdAndScheduleId(Long, Long): boolean
+}
+interface UserScheduleService << interface >> {
+  + deleteUserSchedule(Long): void
+  + getUserScheduleById(Long): Optional<UserScheduleDTO>
+  + assignUserToSchedule(Long, Long): UserScheduleDTO
+  + updateUserSchedule(Long, UserScheduleDTO): UserScheduleDTO
+   allUserSchedules: List<UserScheduleDTO>
+}
+class UserScheduleServiceImpl {
+  + assignUserToSchedule(Long, Long): UserScheduleDTO
+  - findUserById(Long): User
+  + getUserScheduleById(Long): Optional<UserScheduleDTO>
+  + deleteUserSchedule(Long): void
+  - findUserScheduleById(Long): UserSchedule
+  + updateUserSchedule(Long, UserScheduleDTO): UserScheduleDTO
+  - validateUserScheduleConflict(Long, Long): void
+  - findScheduleById(Long): Schedule
+  + UserScheduleServiceImpl(UserScheduleRepository, UserRepository, ScheduleRepository): 
+   allUserSchedules: List<UserScheduleDTO>
+}
+interface UserService << interface >> {
+  + getUserById(Long): Optional<UserDTO>
+  + deleteUser(Long): void
+  + updateUser(Long, UserDTO): UserDTO
+  + createUser(UserDTO): UserDTO
+   allUsers: List<UserDTO>
+}
+class UserServiceImpl {
+  - checkEmailConflict(UserDTO, User): void
+  + createUser(UserDTO): UserDTO
+  + deleteUser(Long): void
+  - checkEmailExistence(String): void
+  - findUserById(Long): User
+  + updateUser(Long, UserDTO): UserDTO
+  + getUserById(Long): Optional<UserDTO>
+  + UserServiceImpl(UserRepository, UserMapper): 
+   allUsers: List<UserDTO>
+}
+class WeatherApiException {
+  + WeatherApiException(String, Exception): 
+}
+class WeatherController {
+  + fetchTodayWeather(String): ResponseEntity<WeatherDTO>
+  + WeatherController(WeatherService, JwtAuthorizationUtil): 
+}
+class WeatherDTO {
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + WeatherDTO(String, String): 
+  + WeatherDTO(): 
+   weather: String
+   date: String
+  - weather: String
+  - date: String
+}
+interface WeatherService << interface >> {
+  + fetchTodayWeather(): WeatherDTO
+}
+class WeatherServiceImpl {
+  + fetchTodayWeather(): WeatherDTO
+  - fetchWeatherData(): String
+  - parseWeatherData(String): List<WeatherDTO>
+  - findTodayWeather(List<WeatherDTO>): WeatherDTO
+  + WeatherServiceImpl(RestTemplate): 
+   defaultWeather: WeatherDTO
+}
+
+AccessDeniedException                -[#000082,plain]-^  BaseException                       
+AuthController                      "1" *-[#595959,plain]-> "authService\n1" AuthService                         
+AuthController                       -[#595959,dashed]->  AuthUserDTO                         
+AuthService                          -[#595959,dashed]->  AuthUserDTO                         
+AuthServiceImpl                      -[#008200,dashed]-^  AuthService                         
+AuthServiceImpl                      -[#595959,dashed]->  AuthServiceImpl                     
+AuthServiceImpl                     "1" *-[#595959,plain]-> "authServiceMapper\n1" AuthServiceMapper                   
+AuthServiceImpl                      -[#595959,dashed]->  AuthUserDTO                         
+AuthServiceImpl                      -[#595959,dashed]->  AuthenticationException             : "«create»"
+AuthServiceImpl                      -[#595959,dashed]->  BaseException                       : "«create»"
+AuthServiceImpl                      -[#595959,dashed]->  EmailAlreadyExistsException         : "«create»"
+AuthServiceImpl                     "1" *-[#595959,plain]-> "jwtTokenProvider\n1" JwtTokenProvider                    
+AuthServiceImpl                      -[#595959,dashed]->  PasswordEncoder                     
+AuthServiceImpl                      -[#595959,dashed]->  RoleName                            
+AuthServiceImpl                      -[#595959,dashed]->  ServiceLoggingUtil                  
+AuthServiceImpl                      -[#595959,dashed]->  User                                
+AuthServiceImpl                     "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                      
+AuthServiceImpl                      -[#595959,dashed]->  UserRole                            : "«create»"
+AuthServiceImpl                     "1" *-[#595959,plain]-> "userRoleRepository\n1" UserRoleRepository                  
+AuthServiceMapper                    -[#595959,dashed]->  AuthServiceMapper                   
+AuthServiceMapper                    -[#595959,dashed]->  AuthUserDTO                         : "«create»"
+AuthServiceMapper                    -[#595959,dashed]->  BaseException                       : "«create»"
+AuthServiceMapper                    -[#595959,dashed]->  ServiceLoggingUtil                  
+AuthServiceMapper                    -[#595959,dashed]->  User                                : "«create»"
+AuthenticationException              -[#000082,plain]-^  BaseException                       
+BaseException                        -[#595959,dashed]->  BaseException                       
+BaseException                       "1" *-[#595959,plain]-> "DEFAULT_ERROR_CODE\n1" ErrorCode                           
+BaseException                        -[#595959,dashed]->  ExceptionLogger                     
+Comment                              -[#595959,dashed]->  Comment                             
+Comment                             "1" *-[#595959,plain]-> "schedule\n1" Schedule                            
+Comment                             "1" *-[#595959,plain]-> "user\n1" User                                
+CommentController                    -[#595959,dashed]->  CommentDTO                          
+CommentController                   "1" *-[#595959,plain]-> "commentService\n1" CommentService                      
+CommentController                   "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+CommentMapper                        -[#595959,dashed]->  BaseException                       : "«create»"
+CommentMapper                        -[#595959,dashed]->  Comment                             : "«create»"
+CommentMapper                        -[#595959,dashed]->  CommentDTO                          : "«create»"
+CommentMapper                        -[#595959,dashed]->  CommentMapper                       
+CommentMapper                        -[#595959,dashed]->  Schedule                            : "«create»"
+CommentMapper                        -[#595959,dashed]->  ServiceLoggingUtil                  
+CommentMapper                        -[#595959,dashed]->  User                                : "«create»"
+CommentNotFoundException             -[#000082,plain]-^  BaseException                       
+CommentRepository                    -[#595959,dashed]->  Comment                             
+CommentService                       -[#595959,dashed]->  CommentDTO                          
+CommentServiceImpl                   -[#595959,dashed]->  BaseException                       : "«create»"
+CommentServiceImpl                   -[#595959,dashed]->  Comment                             
+CommentServiceImpl                   -[#595959,dashed]->  CommentDTO                          
+CommentServiceImpl                   -[#595959,dashed]->  CommentMapper                       
+CommentServiceImpl                   -[#595959,dashed]->  CommentNotFoundException            : "«create»"
+CommentServiceImpl                  "1" *-[#595959,plain]-> "commentRepository\n1" CommentRepository                   
+CommentServiceImpl                   -[#008200,dashed]-^  CommentService                      
+CommentServiceImpl                   -[#595959,dashed]->  CommentServiceImpl                  
+CommentServiceImpl                   -[#595959,dashed]->  Schedule                            
+CommentServiceImpl                   -[#595959,dashed]->  ScheduleNotFoundException           : "«create»"
+CommentServiceImpl                  "1" *-[#595959,plain]-> "scheduleRepository\n1" ScheduleRepository                  
+CommentServiceImpl                   -[#595959,dashed]->  ServiceLoggingUtil                  
+CommentServiceImpl                   -[#595959,dashed]->  User                                
+CommentServiceImpl                   -[#595959,dashed]->  UserNotFoundException               : "«create»"
+CommentServiceImpl                  "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                      
+DatabaseException                    -[#000082,plain]-^  BaseException                       
+DuplicateRoleAssignmentException     -[#000082,plain]-^  BaseException                       
+EmailAlreadyExistsException          -[#000082,plain]-^  BaseException                       
+ErrorResponseBuilder                 +-[#820000,plain]-  ErrorResponse                       
+ExceptionLogger                      -[#595959,dashed]->  ExceptionLogger                     
+GlobalExceptionHandler               -[#595959,dashed]->  AccessDeniedException               
+GlobalExceptionHandler               -[#595959,dashed]->  AuthenticationException             
+GlobalExceptionHandler               -[#595959,dashed]->  BaseException                       
+GlobalExceptionHandler               -[#595959,dashed]->  CommentNotFoundException            
+GlobalExceptionHandler               -[#595959,dashed]->  DatabaseException                   
+GlobalExceptionHandler               -[#595959,dashed]->  DuplicateRoleAssignmentException    
+GlobalExceptionHandler               -[#595959,dashed]->  EmailAlreadyExistsException         
+GlobalExceptionHandler               -[#595959,dashed]->  ErrorCode                           
+GlobalExceptionHandler               -[#595959,dashed]->  ErrorResponse                       
+GlobalExceptionHandler               -[#595959,dashed]->  ErrorResponseBuilder                
+GlobalExceptionHandler               -[#595959,dashed]->  GlobalExceptionHandler              
+GlobalExceptionHandler               -[#595959,dashed]->  InvalidPageSizeException            
+GlobalExceptionHandler               -[#595959,dashed]->  InvalidTokenException               
+GlobalExceptionHandler               -[#595959,dashed]->  MalformedJwtException               
+GlobalExceptionHandler               -[#595959,dashed]->  MethodArgumentTypeMismatchException 
+GlobalExceptionHandler               -[#595959,dashed]->  MissingTokenException               
+GlobalExceptionHandler               -[#595959,dashed]->  RoleNotFoundException               
+GlobalExceptionHandler               -[#595959,dashed]->  ScheduleNotFoundException           
+GlobalExceptionHandler               -[#595959,dashed]->  TokenExpiredException               
+GlobalExceptionHandler               -[#595959,dashed]->  UserNotFoundException               
+GlobalExceptionHandler               -[#595959,dashed]->  UserScheduleConflictException       
+GlobalExceptionHandler               -[#595959,dashed]->  WeatherApiException                 
+InvalidDataAccessApiUsageException   -[#000082,plain]-^  BaseException                       
+InvalidPageSizeException             -[#000082,plain]-^  BaseException                       
+InvalidTokenException                -[#000082,plain]-^  BaseException                       
+JwtAuthorizationFilter               -[#595959,dashed]->  AccessDeniedException               : "«create»"
+JwtAuthorizationFilter               -[#595959,dashed]->  JwtAuthorizationFilter              
+JwtAuthorizationFilter               -[#008200,dashed]-^  JwtAuthorizationFilterInterface     
+JwtAuthorizationFilter              "1" *-[#595959,plain]-> "jwtTokenProvider\n1" JwtTokenProvider                    
+JwtAuthorizationFilter               -[#595959,dashed]->  TokenExpiredException               
+JwtAuthorizationUtil                 -[#595959,dashed]->  AccessDeniedException               : "«create»"
+JwtAuthorizationUtil                 -[#595959,dashed]->  InvalidTokenException               : "«create»"
+JwtAuthorizationUtil                 -[#595959,dashed]->  JwtAuthorizationUtil                
+JwtAuthorizationUtil                "1" *-[#595959,plain]-> "jwtTokenProvider\n1" JwtTokenProvider                    
+JwtAuthorizationUtil                 -[#595959,dashed]->  MissingTokenException               : "«create»"
+JwtTokenProvider                     -[#595959,dashed]->  BaseException                       : "«create»"
+JwtTokenProvider                     -[#595959,dashed]->  JwtTokenProvider                    
+JwtTokenProvider                     -[#595959,dashed]->  TokenExpiredException               : "«create»"
+JwtTokenProvider                     -[#595959,dashed]->  UserRole                            
+MalformedJwtException                -[#000082,plain]-^  BaseException                       
+MethodArgumentTypeMismatchException  -[#000082,plain]-^  BaseException                       
+MissingTokenException                -[#000082,plain]-^  BaseException                       
+RoleNotFoundException                -[#000082,plain]-^  BaseException                       
+Schedule                            "1" *-[#595959,plain]-> "comments\n*" Comment                             
+Schedule                             -[#595959,dashed]->  Schedule                            
+Schedule                            "1" *-[#595959,plain]-> "user\n1" User                                
+Schedule                            "1" *-[#595959,plain]-> "userSchedules\n*" UserSchedule                        
+ScheduleController                  "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+ScheduleController                   -[#595959,dashed]->  ScheduleController                  
+ScheduleController                   -[#595959,dashed]->  ScheduleDTO                         
+ScheduleController                  "1" *-[#595959,plain]-> "scheduleService\n1" ScheduleService                     
+ScheduleMapper                       -[#595959,dashed]->  BaseException                       : "«create»"
+ScheduleMapper                       -[#595959,dashed]->  Schedule                            : "«create»"
+ScheduleMapper                       -[#595959,dashed]->  ScheduleDTO                         : "«create»"
+ScheduleMapper                       -[#595959,dashed]->  ScheduleMapper                      
+ScheduleMapper                       -[#595959,dashed]->  ServiceLoggingUtil                  
+ScheduleMapper                       -[#595959,dashed]->  User                                
+ScheduleNotFoundException            -[#000082,plain]-^  BaseException                       
+ScheduleRepository                   -[#595959,dashed]->  Schedule                            
+ScheduleService                      -[#595959,dashed]->  ScheduleDTO                         
+ScheduleServiceImpl                  -[#595959,dashed]->  BaseException                       : "«create»"
+ScheduleServiceImpl                  -[#595959,dashed]->  InvalidDataAccessApiUsageException  : "«create»"
+ScheduleServiceImpl                  -[#595959,dashed]->  InvalidPageSizeException            : "«create»"
+ScheduleServiceImpl                  -[#595959,dashed]->  Schedule                            
+ScheduleServiceImpl                  -[#595959,dashed]->  ScheduleDTO                         
+ScheduleServiceImpl                  -[#595959,dashed]->  ScheduleMapper                      
+ScheduleServiceImpl                  -[#595959,dashed]->  ScheduleNotFoundException           : "«create»"
+ScheduleServiceImpl                 "1" *-[#595959,plain]-> "scheduleRepository\n1" ScheduleRepository                  
+ScheduleServiceImpl                  -[#008200,dashed]-^  ScheduleService                     
+ScheduleServiceImpl                  -[#595959,dashed]->  ScheduleServiceImpl                 
+ScheduleServiceImpl                  -[#595959,dashed]->  ServiceLoggingUtil                  
+ScheduleServiceImpl                  -[#595959,dashed]->  User                                
+ScheduleServiceImpl                  -[#595959,dashed]->  UserNotFoundException               : "«create»"
+ScheduleServiceImpl                 "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                      
+ScheduleServiceImpl                  -[#595959,dashed]->  WeatherDTO                          
+ScheduleServiceImpl                 "1" *-[#595959,plain]-> "weatherService\n1" WeatherService                      
+ServiceLoggingUtil                   -[#595959,dashed]->  ServiceLoggingUtil                  
+SpringScheduleManagementApplication  -[#595959,dashed]->  SpringScheduleManagementApplication 
+TokenExpiredException                -[#000082,plain]-^  BaseException                       
+User                                "1" *-[#595959,plain]-> "comments\n*" Comment                             
+User                                "1" *-[#595959,plain]-> "schedules\n*" Schedule                            
+User                                 -[#595959,dashed]->  User                                
+User                                "1" *-[#595959,plain]-> "roles\n*" UserRole                            
+User                                "1" *-[#595959,plain]-> "userSchedules\n*" UserSchedule                        
+UserController                      "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+UserController                       -[#595959,dashed]->  UserDTO                             
+UserController                      "1" *-[#595959,plain]-> "userService\n1" UserService                         
+UserMapper                           -[#595959,dashed]->  BaseException                       : "«create»"
+UserMapper                           -[#595959,dashed]->  ServiceLoggingUtil                  
+UserMapper                           -[#595959,dashed]->  User                                : "«create»"
+UserMapper                           -[#595959,dashed]->  UserDTO                             : "«create»"
+UserMapper                           -[#595959,dashed]->  UserMapper                          
+UserNotFoundException                -[#000082,plain]-^  BaseException                       
+UserRepository                       -[#595959,dashed]->  User                                
+UserRole                            "1" *-[#595959,plain]-> "roleName\n1" RoleName                            
+UserRole                            "1" *-[#595959,plain]-> "user\n1" User                                
+UserRole                             -[#595959,dashed]->  UserRole                            
+UserRoleController                  "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+UserRoleController                   -[#595959,dashed]->  UserRoleDTO                         
+UserRoleController                  "1" *-[#595959,plain]-> "userRoleService\n1" UserRoleService                     
+UserRoleDTO                         "1" *-[#595959,plain]-> "roleName\n1" RoleName                            
+UserRoleMapper                       -[#595959,dashed]->  BaseException                       : "«create»"
+UserRoleMapper                       -[#595959,dashed]->  ServiceLoggingUtil                  
+UserRoleMapper                       -[#595959,dashed]->  User                                
+UserRoleMapper                       -[#595959,dashed]->  UserRole                            : "«create»"
+UserRoleMapper                       -[#595959,dashed]->  UserRoleDTO                         : "«create»"
+UserRoleMapper                       -[#595959,dashed]->  UserRoleMapper                      
+UserRoleRepository                   -[#595959,dashed]->  RoleName                            
+UserRoleRepository                   -[#595959,dashed]->  UserRole                            
+UserRoleService                      -[#595959,dashed]->  UserRoleDTO                         
+UserRoleServiceImpl                  -[#595959,dashed]->  BaseException                       : "«create»"
+UserRoleServiceImpl                  -[#595959,dashed]->  DuplicateRoleAssignmentException    : "«create»"
+UserRoleServiceImpl                  -[#595959,dashed]->  RoleName                            
+UserRoleServiceImpl                  -[#595959,dashed]->  RoleNotFoundException               : "«create»"
+UserRoleServiceImpl                  -[#595959,dashed]->  ServiceLoggingUtil                  
+UserRoleServiceImpl                  -[#595959,dashed]->  UserRole                            
+UserRoleServiceImpl                  -[#595959,dashed]->  UserRoleDTO                         
+UserRoleServiceImpl                  -[#595959,dashed]->  UserRoleMapper                      
+UserRoleServiceImpl                 "1" *-[#595959,plain]-> "roleRepository\n1" UserRoleRepository                  
+UserRoleServiceImpl                  -[#008200,dashed]-^  UserRoleService                     
+UserRoleServiceImpl                  -[#595959,dashed]->  UserRoleServiceImpl                 
+UserSchedule                        "1" *-[#595959,plain]-> "schedule\n1" Schedule                            
+UserSchedule                        "1" *-[#595959,plain]-> "user\n1" User                                
+UserSchedule                         -[#595959,dashed]->  UserSchedule                        
+UserScheduleConflictException        -[#000082,plain]-^  BaseException                       
+UserScheduleController              "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+UserScheduleController               -[#595959,dashed]->  UserScheduleDTO                     
+UserScheduleController              "1" *-[#595959,plain]-> "userScheduleService\n1" UserScheduleService                 
+UserScheduleMapper                   -[#595959,dashed]->  BaseException                       : "«create»"
+UserScheduleMapper                   -[#595959,dashed]->  Schedule                            
+UserScheduleMapper                   -[#595959,dashed]->  ServiceLoggingUtil                  
+UserScheduleMapper                   -[#595959,dashed]->  User                                
+UserScheduleMapper                   -[#595959,dashed]->  UserSchedule                        : "«create»"
+UserScheduleMapper                   -[#595959,dashed]->  UserScheduleDTO                     : "«create»"
+UserScheduleMapper                   -[#595959,dashed]->  UserScheduleMapper                  
+UserScheduleRepository               -[#595959,dashed]->  UserSchedule                        
+UserScheduleService                  -[#595959,dashed]->  UserScheduleDTO                     
+UserScheduleServiceImpl              -[#595959,dashed]->  BaseException                       : "«create»"
+UserScheduleServiceImpl              -[#595959,dashed]->  Schedule                            
+UserScheduleServiceImpl              -[#595959,dashed]->  ScheduleNotFoundException           : "«create»"
+UserScheduleServiceImpl             "1" *-[#595959,plain]-> "scheduleRepository\n1" ScheduleRepository                  
+UserScheduleServiceImpl              -[#595959,dashed]->  ServiceLoggingUtil                  
+UserScheduleServiceImpl              -[#595959,dashed]->  User                                
+UserScheduleServiceImpl              -[#595959,dashed]->  UserNotFoundException               : "«create»"
+UserScheduleServiceImpl             "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                      
+UserScheduleServiceImpl              -[#595959,dashed]->  UserSchedule                        : "«create»"
+UserScheduleServiceImpl              -[#595959,dashed]->  UserScheduleConflictException       : "«create»"
+UserScheduleServiceImpl              -[#595959,dashed]->  UserScheduleDTO                     
+UserScheduleServiceImpl              -[#595959,dashed]->  UserScheduleMapper                  
+UserScheduleServiceImpl             "1" *-[#595959,plain]-> "userScheduleRepository\n1" UserScheduleRepository              
+UserScheduleServiceImpl              -[#008200,dashed]-^  UserScheduleService                 
+UserScheduleServiceImpl              -[#595959,dashed]->  UserScheduleServiceImpl             
+UserService                          -[#595959,dashed]->  UserDTO                             
+UserServiceImpl                      -[#595959,dashed]->  BaseException                       : "«create»"
+UserServiceImpl                      -[#595959,dashed]->  EmailAlreadyExistsException         : "«create»"
+UserServiceImpl                      -[#595959,dashed]->  PasswordEncoder                     
+UserServiceImpl                      -[#595959,dashed]->  ServiceLoggingUtil                  
+UserServiceImpl                      -[#595959,dashed]->  User                                
+UserServiceImpl                      -[#595959,dashed]->  UserDTO                             
+UserServiceImpl                     "1" *-[#595959,plain]-> "userMapper\n1" UserMapper                          
+UserServiceImpl                      -[#595959,dashed]->  UserNotFoundException               : "«create»"
+UserServiceImpl                     "1" *-[#595959,plain]-> "userRepository\n1" UserRepository                      
+UserServiceImpl                      -[#008200,dashed]-^  UserService                         
+UserServiceImpl                      -[#595959,dashed]->  UserServiceImpl                     
+WeatherApiException                  -[#000082,plain]-^  BaseException                       
+WeatherController                   "1" *-[#595959,plain]-> "jwtAuthorizationUtil\n1" JwtAuthorizationUtil                
+WeatherController                    -[#595959,dashed]->  WeatherDTO                          
+WeatherController                   "1" *-[#595959,plain]-> "weatherService\n1" WeatherService                      
+WeatherService                       -[#595959,dashed]->  WeatherDTO                          
+WeatherServiceImpl                   -[#595959,dashed]->  ServiceLoggingUtil                  
+WeatherServiceImpl                   -[#595959,dashed]->  WeatherDTO                          : "«create»"
+WeatherServiceImpl                   -[#008200,dashed]-^  WeatherService                      
+WeatherServiceImpl                   -[#595959,dashed]->  WeatherServiceImpl                  
+@enduml

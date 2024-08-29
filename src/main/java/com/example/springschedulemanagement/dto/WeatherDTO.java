@@ -1,10 +1,16 @@
 package com.example.springschedulemanagement.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class WeatherDTO extends GenericDTO<Long> {
-    private Long scheduleId;
-    private Double temperature;
-    private String weatherDescription;
+@NoArgsConstructor
+@AllArgsConstructor
+public class WeatherDTO {
+
+    private String date;
+
+    private String weather;
+
 }
