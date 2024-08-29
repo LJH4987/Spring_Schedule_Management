@@ -14,7 +14,7 @@ RESTful API를 통해 기본적인 일정 관리에 필요한 기능을 제공�
 서버 애플리케이션을 구축하는 것입니다.</br>
 실제로 프론트엔드 관련 정적 파일 제공 작업은 포함되지 않으나,</br>
 클라이언트로부터 일정과 관련된 요청을 받아 처리하며,</br>
-작업을 수행한 후 JSON 형식으로 응답에대한 반환을 가정하며 설계되었습니다.</br>
+작업을 수행한 후 JSON 형식으로 요청에대한 응답을 가정하며 설계되었습니다.</br>
 또한, 스프링 시큐리티에 대한 의존성을 줄이고 싶어</br>
 스프링 시큐리티를 지향하며 설계되었습니다.</br>
 
@@ -33,12 +33,12 @@ CommentRepository와 ScheduleRepository는 데이터베이스와의 상호작용
 DTO(Data Transfer Object)와 Mapper를 통해 데이터 전송 및 변환이 이루어집니다.</br>
 
 
-## 유저 및 역할 관리
+## 유저 및 권한 관리
 UserController는 사용자 정보 관리를 담당하며,</br>
 UserService와 UserRepository를 통해</br>
 사용자 데이터의 CRUD(Create, Read, Update, Delete) 작업을 처리합니다.</br>
-사용자의 역할 관리는 UserRoleController, UserRoleService, UserRoleRepository를 통해 이루어지며,</br>
-각 역할은 RoleName 열거형(eums)과 UserRole 클래스에 의해 관리됩니다.</br>
+사용자의 권한 관리는 UserRoleController, UserRoleService, UserRoleRepository를 통해 이루어지며,</br>
+각 권한은 RoleName 열거형(eums)과 UserRole 클래스에 의해 관리됩니다.</br>
 
 ## 보안 및 JWT 토큰 관리
 JwtAuthorizationFilter와 JwtTokenProvider는 JWT 기반의 보안 기능을 제공합니다.</br>
