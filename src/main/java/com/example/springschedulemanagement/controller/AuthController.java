@@ -5,7 +5,6 @@ import com.example.springschedulemanagement.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -17,7 +16,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Transactional
     @PostMapping("/register")
     public ResponseEntity<AuthUserDTO> register(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody AuthUserDTO authUserDTO) {
 
@@ -26,7 +24,6 @@ public class AuthController {
         return ResponseEntity.created(URI.create("/auth/register/" + registeredUser.getId())).body(registeredUser);
     }
 
-    @Transactional
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String hashPassword) {
 

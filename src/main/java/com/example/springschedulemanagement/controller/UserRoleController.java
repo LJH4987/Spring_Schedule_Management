@@ -6,7 +6,6 @@ import com.example.springschedulemanagement.service.UserRoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,6 @@ public class UserRoleController {
     private final JwtAuthorizationUtil jwtAuthorizationUtil;
 
 
-    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<UserRoleDTO> getRoleById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -29,7 +27,6 @@ public class UserRoleController {
         return userRoleService.getRoleById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<List<UserRoleDTO>> getAllRoles(@RequestHeader(value = "Authorization", required = false) String token) {
 
@@ -39,7 +36,6 @@ public class UserRoleController {
         return ResponseEntity.ok(roles);
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<UserRoleDTO> assignRole(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody UserRoleDTO userRoleDTO) {
 

@@ -6,7 +6,6 @@ import com.example.springschedulemanagement.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,7 +19,6 @@ public class CommentController {
     private final CommentService commentService;
     private final JwtAuthorizationUtil jwtAuthorizationUtil;
 
-    @Transactional
     @PostMapping
     public ResponseEntity<CommentDTO> createComment(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody CommentDTO commentDTO) {
 
@@ -29,7 +27,6 @@ public class CommentController {
         return ResponseEntity.created(URI.create("/comments/" + createdComment.getId())).body(createdComment);
     }
 
-    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<CommentDTO> getCommentById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -37,7 +34,6 @@ public class CommentController {
         return commentService.getCommentById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> updateComment(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
 
@@ -46,7 +42,6 @@ public class CommentController {
         return ResponseEntity.ok(updatedComment);
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -55,7 +50,6 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<List<CommentDTO>> getAllComments(@RequestHeader(value = "Authorization", required = false) String token) {
 
@@ -64,8 +58,6 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
-
-    @Transactional(readOnly = true)
     @GetMapping("/schedule/{scheduleId}")
     public ResponseEntity<List<CommentDTO>> getAllCommentsForSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long scheduleId) {
 

@@ -6,7 +6,6 @@ import com.example.springschedulemanagement.service.UserScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,7 +19,6 @@ public class UserScheduleController {
     private final UserScheduleService userScheduleService;
     private final JwtAuthorizationUtil jwtAuthorizationUtil;
 
-    @Transactional
     @PostMapping("/assign")
     public ResponseEntity<UserScheduleDTO> assignUserToSchedule(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody UserScheduleDTO request) {
 
@@ -31,7 +29,6 @@ public class UserScheduleController {
     }
 
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -41,7 +38,6 @@ public class UserScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<UserScheduleDTO> updateUserSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody UserScheduleDTO userScheduleDTO) {
 
@@ -52,7 +48,6 @@ public class UserScheduleController {
     }
 
 
-    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<UserScheduleDTO> getUserScheduleById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -61,7 +56,6 @@ public class UserScheduleController {
         return userScheduleService.getUserScheduleById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<List<UserScheduleDTO>> getAllUserSchedules(@RequestHeader(value = "Authorization", required = false) String token) {
 

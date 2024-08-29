@@ -13,7 +13,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -26,7 +25,6 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final JwtAuthorizationUtil jwtAuthorizationUtil;
 
-    @Transactional
     @PostMapping
     public ResponseEntity<ScheduleDTO> createSchedule(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody ScheduleDTO scheduleDTO) {
 
@@ -35,7 +33,6 @@ public class ScheduleController {
         return ResponseEntity.created(URI.create("/schedules/" + createdSchedule.getId())).body(createdSchedule);
     }
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<ScheduleDTO> updateSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody ScheduleDTO scheduleDTO) {
 
@@ -44,7 +41,6 @@ public class ScheduleController {
         return ResponseEntity.ok(updatedSchedule);
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -53,7 +49,6 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleDTO> getScheduleById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
@@ -61,7 +56,6 @@ public class ScheduleController {
         return scheduleService.getScheduleById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ScheduleDTO>>> getAllSchedules(@RequestHeader(value = "Authorization", required = false) String token, @PageableDefault(size = 10) Pageable pageable, PagedResourcesAssembler<ScheduleDTO> assembler) {
 

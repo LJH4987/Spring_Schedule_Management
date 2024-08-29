@@ -41,7 +41,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             ServiceLoggingUtil.logInfo(ScheduleServiceImpl.class, "일정을 생성 중입니다. 유저 ID: {}", scheduleDTO.getUserId());
 
-            // 일정 저장
             Schedule schedule = ScheduleMapper.toEntity(scheduleDTO);
             User user = userRepository.findById(scheduleDTO.getUserId())
                     .orElseThrow(() -> new UserNotFoundException("해당 ID를 가진 유저를 찾을 수 없습니다: " + scheduleDTO.getUserId()));
