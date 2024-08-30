@@ -1,6 +1,6 @@
 package com.example.springschedulemanagement.controller;
 
-import com.example.springschedulemanagement.config.jwt.JwtAuthorizationUtil;
+import com.example.springschedulemanagement.config.jwt.JwtAuthorizationFilter;
 import com.example.springschedulemanagement.dto.UserRoleDTO;
 import com.example.springschedulemanagement.service.UserRoleService;
 import jakarta.validation.Valid;
@@ -16,13 +16,13 @@ import java.util.List;
 public class UserRoleController {
 
     private final UserRoleService userRoleService;
-    private final JwtAuthorizationUtil jwtAuthorizationUtil;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
 
     @GetMapping("/{id}")
     public ResponseEntity<UserRoleDTO> getRoleById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         return userRoleService.getRoleById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -30,7 +30,7 @@ public class UserRoleController {
     @GetMapping
     public ResponseEntity<List<UserRoleDTO>> getAllRoles(@RequestHeader(value = "Authorization", required = false) String token) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         List<UserRoleDTO> roles = userRoleService.getAllRoles();
         return ResponseEntity.ok(roles);
@@ -39,7 +39,7 @@ public class UserRoleController {
     @PutMapping("/{id}")
     public ResponseEntity<UserRoleDTO> assignRole(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody UserRoleDTO userRoleDTO) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         UserRoleDTO updatedRole = userRoleService.assignRole(id, userRoleDTO);
         return ResponseEntity.ok(updatedRole);

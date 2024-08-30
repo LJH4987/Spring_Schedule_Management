@@ -1,6 +1,6 @@
 package com.example.springschedulemanagement.controller;
 
-import com.example.springschedulemanagement.config.jwt.JwtAuthorizationUtil;
+import com.example.springschedulemanagement.config.jwt.JwtAuthorizationFilter;
 import com.example.springschedulemanagement.dto.UserDTO;
 import com.example.springschedulemanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -17,12 +17,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final JwtAuthorizationUtil jwtAuthorizationUtil;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody UserDTO userDTO) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
@@ -31,7 +31,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         return userService.getUserById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers(@RequestHeader(value = "Authorization", required = false) String token) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         List<UserDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -50,7 +50,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         UserDTO updatedUser = userService.updateUser(id, userDTO);
         return ResponseEntity.ok(updatedUser);
@@ -59,7 +59,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
-        jwtAuthorizationUtil.validateAdminToken(token);
+        jwtAuthorizationFilter.validateAdminToken(token);
 
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();

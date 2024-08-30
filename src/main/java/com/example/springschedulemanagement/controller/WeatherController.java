@@ -1,6 +1,6 @@
 package com.example.springschedulemanagement.controller;
 
-import com.example.springschedulemanagement.config.jwt.JwtAuthorizationUtil;
+import com.example.springschedulemanagement.config.jwt.JwtAuthorizationFilter;
 import com.example.springschedulemanagement.dto.WeatherDTO;
 import com.example.springschedulemanagement.service.WeatherService;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeatherController {
 
     private final WeatherService weatherService;
-    private final JwtAuthorizationUtil jwtAuthorizationUtil;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @GetMapping("/today")
     public ResponseEntity<WeatherDTO> fetchTodayWeather(@RequestHeader(value = "Authorization", required = false) String token) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
 
         WeatherDTO weatherDTO = weatherService.fetchTodayWeather();
         return ResponseEntity.ok(weatherDTO);

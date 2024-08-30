@@ -1,6 +1,6 @@
 package com.example.springschedulemanagement.controller;
 
-import com.example.springschedulemanagement.config.jwt.JwtAuthorizationUtil;
+import com.example.springschedulemanagement.config.jwt.JwtAuthorizationFilter;
 import com.example.springschedulemanagement.dto.ScheduleDTO;
 import com.example.springschedulemanagement.service.ScheduleService;
 import jakarta.validation.Valid;
@@ -23,12 +23,12 @@ import java.net.URI;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
-    private final JwtAuthorizationUtil jwtAuthorizationUtil;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @PostMapping
     public ResponseEntity<ScheduleDTO> createSchedule(@RequestHeader(value = "Authorization", required = false) String token, @Valid @RequestBody ScheduleDTO scheduleDTO) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
         ScheduleDTO createdSchedule = scheduleService.createSchedule(scheduleDTO);
         return ResponseEntity.created(URI.create("/schedules/" + createdSchedule.getId())).body(createdSchedule);
     }
@@ -36,7 +36,7 @@ public class ScheduleController {
     @PutMapping("/{id}")
     public ResponseEntity<ScheduleDTO> updateSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id, @Valid @RequestBody ScheduleDTO scheduleDTO) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
         ScheduleDTO updatedSchedule = scheduleService.updateSchedule(id, scheduleDTO);
         return ResponseEntity.ok(updatedSchedule);
     }
@@ -44,7 +44,7 @@ public class ScheduleController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
         scheduleService.deleteSchedule(id);
         return ResponseEntity.noContent().build();
     }
@@ -52,14 +52,14 @@ public class ScheduleController {
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleDTO> getScheduleById(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long id) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
         return scheduleService.getScheduleById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public ResponseEntity<PagedModel<EntityModel<ScheduleDTO>>> getAllSchedules(@RequestHeader(value = "Authorization", required = false) String token, @PageableDefault(size = 10) Pageable pageable, PagedResourcesAssembler<ScheduleDTO> assembler) {
 
-        jwtAuthorizationUtil.validateUserOrAdminToken(token);
+        jwtAuthorizationFilter.validateUserOrAdminToken(token);
         Page<ScheduleDTO> schedules = scheduleService.getAllSchedules(pageable);
 
         PagedModel<EntityModel<ScheduleDTO>> pagedModel = assembler.toModel(schedules, WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ScheduleController.class).getAllSchedules(token, pageable, assembler)).withSelfRel());
